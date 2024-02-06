@@ -9,6 +9,7 @@ type Profile = {
   favoriteFruits: Fruit[];
 };
 
+const MAX_PROFILE_LENGTH = 2;
 const DEFAULT_VALUES = {
   profiles: [
     {
@@ -65,17 +66,18 @@ function Form({
                 ))}
               </div>
             </fieldset>
-            {i === fields.length - 1 && (
-              <button
-                type="button"
-                className="bg-green-500 text-white mt-2 px-4 py-2"
-                onClick={() => {
-                  append({ name: '', favoriteFruits: [] });
-                }}
-              >
-                add profile
-              </button>
-            )}
+            {fields.length !== MAX_PROFILE_LENGTH &&
+              fields.length === i + 1 && (
+                <button
+                  type="button"
+                  className="bg-green-500 text-white mt-2 px-4 py-2"
+                  onClick={() => {
+                    append({ name: '', favoriteFruits: [] });
+                  }}
+                >
+                  add profile
+                </button>
+              )}
           </div>
         ))}
       </form>
