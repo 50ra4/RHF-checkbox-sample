@@ -25,24 +25,30 @@ function Form({
   defaultValues?: { profiles: Profile[] };
   onClickCopy: (value: { profiles: Profile[] }) => void;
 }) {
-  const { control, register, getValues } = useForm({ defaultValues });
+  const { control, register, getValues } = useForm({
+    defaultValues: defaultValues,
+  });
   const { fields, append } = useFieldArray({ name: 'profiles', control });
 
   return (
-    <div>
-      <form>
+    <div className="p-3 border-gray-600 border-4 border-solid">
+      <form className="space-y-2">
         {fields.map((field, i) => (
           <div key={field.id}>
             <label>
               name:
-              <input {...register(`profiles.${i}.name`)} />
+              <input
+                className="ml-1 border border-gray-400 border-solid px-1"
+                {...register(`profiles.${i}.name`)}
+              />
             </label>
-            <fieldset>
-              <legend>favoriteFruits:</legend>
-              <div>
+            <fieldset className="mt-1 border border-gray-400 border-solid p-2">
+              <legend>favorite fruits:</legend>
+              <div className="flex flex-col">
                 {FRUITS.map((fruit) => (
                   <label key={`${i}-${fruit}`}>
                     <input
+                      className="mr-1"
                       type="checkbox"
                       value={fruit}
                       {...register(`profiles.${i}.favoriteFruits`)}
@@ -52,20 +58,29 @@ function Form({
                 ))}
               </div>
             </fieldset>
-            <button
-              type="button"
-              onClick={() => {
-                append({ name: '', favoriteFruits: [] });
-              }}
-            >
-              add profile
-            </button>
+            {i === fields.length - 1 && (
+              <button
+                type="button"
+                className="bg-green-500 text-white mt-2 px-4 py-2"
+                onClick={() => {
+                  append({ name: '', favoriteFruits: [] });
+                }}
+              >
+                add profile
+              </button>
+            )}
           </div>
         ))}
       </form>
-      <button type="button" onClick={() => onClickCopy(getValues())}>
-        copy form
-      </button>
+      <div className="flex space-x-2 mt-4">
+        <button
+          className="bg-orange-500 text-white px-4 py-2"
+          type="button"
+          onClick={() => onClickCopy(getValues())}
+        >
+          copy this form
+        </button>
+      </div>
     </div>
   );
 }
@@ -74,16 +89,26 @@ export function App() {
   const [forms, setForms] = useState([DEFAULT_VALUES]);
 
   return (
-    <div className="p-3 space-y-3">
+    <div className="p-3 space-y-6">
+      {!forms.length && (
+        <button
+          className="bg-red-500 text-white px-4 py-2 mb-2"
+          type="button"
+          onClick={() => {
+            setForms((prev) => [...prev, DEFAULT_VALUES]);
+          }}
+        >
+          add new form
+        </button>
+      )}
       {forms.map((form, i) => (
-        <div className="p-3 border-gray-400 border-4 border-solid" key={i}>
-          <Form
-            onClickCopy={(v) => {
-              setForms((prev) => [...prev, v]);
-            }}
-            defaultValues={form}
-          />
-        </div>
+        <Form
+          key={i}
+          onClickCopy={(v) => {
+            setForms((prev) => [...prev, v]);
+          }}
+          defaultValues={form}
+        />
       ))}
     </div>
   );
