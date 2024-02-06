@@ -1,35 +1,90 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
 
-function App() {
-  const [count, setCount] = useState(0)
+const FRUITS = ['apple', 'banana', 'cherry', 'grape', 'orange'] as const;
+
+type Fruit = keyof typeof FRUITS;
+type Profile = {
+  name: string;
+  favoriteFruits: Fruit[];
+};
+
+const DEFAULT_VALUES = {
+  profiles: [
+    {
+      name: '',
+      favoriteFruits: [],
+    },
+  ] as Profile[],
+};
+
+function Form({
+  onClickCopy,
+  defaultValues,
+}: {
+  defaultValues?: { profiles: Profile[] };
+  onClickCopy: (value: { profiles: Profile[] }) => void;
+}) {
+  const { control, register, getValues } = useForm({ defaultValues });
+  const { fields, append } = useFieldArray({ name: 'profiles', control });
+
+  return (
+    <div>
+      <form>
+        {fields.map((field, i) => (
+          <div key={field.id}>
+            <label>
+              name:
+              <input {...register(`profiles.${i}.name`)} />
+            </label>
+            <fieldset>
+              <legend>favoriteFruits:</legend>
+              <div>
+                {FRUITS.map((fruit) => (
+                  <label key={`${i}-${fruit}`}>
+                    <input
+                      type="checkbox"
+                      value={fruit}
+                      {...register(`profiles.${i}.favoriteFruits`)}
+                    />
+                    {fruit}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+            <button
+              type="button"
+              onClick={() => {
+                append({ name: '', favoriteFruits: [] });
+              }}
+            >
+              add profile
+            </button>
+          </div>
+        ))}
+      </form>
+      <button type="button" onClick={() => onClickCopy(getValues())}>
+        copy form
+      </button>
+    </div>
+  );
+}
+
+export function App() {
+  const [forms, setForms] = useState([DEFAULT_VALUES]);
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {forms.map((form, i) => (
+        <div style={{ border: 'solid #eee 3px', padding: '8px' }} key={i}>
+          <Form
+            onClickCopy={(v) => {
+              setForms((prev) => [...prev, v]);
+            }}
+            defaultValues={form}
+          />
+        </div>
+      ))}
     </>
-  )
+  );
 }
-
-export default App
