@@ -74,9 +74,9 @@ export function App() {
   const [forms, setForms] = useState([DEFAULT_VALUES]);
 
   return (
-    <>
+    <div className="p-3 space-y-3">
       {forms.map((form, i) => (
-        <div style={{ border: 'solid #eee 3px', padding: '8px' }} key={i}>
+        <div className="p-3 border-gray-400 border-4 border-solid" key={i}>
           <Form
             onClickCopy={(v) => {
               setForms((prev) => [...prev, v]);
@@ -85,6 +85,6 @@ export function App() {
           />
         </div>
       ))}
-    </>
+    </div>
   );
 }
