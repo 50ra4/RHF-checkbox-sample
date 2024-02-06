@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 
 const FRUITS = ['apple', 'banana', 'cherry', 'grape', 'orange'] as const;
@@ -20,15 +20,22 @@ const DEFAULT_VALUES = {
 
 function Form({
   onClickCopy,
-  defaultValues,
+  previousValues,
 }: {
-  defaultValues?: { profiles: Profile[] };
+  previousValues?: { profiles: Profile[] };
   onClickCopy: (value: { profiles: Profile[] }) => void;
 }) {
-  const { control, register, getValues } = useForm({
-    defaultValues: defaultValues,
+  const { control, register, getValues, reset } = useForm({
+    defaultValues: DEFAULT_VALUES,
   });
   const { fields, append } = useFieldArray({ name: 'profiles', control });
+
+  useEffect(() => {
+    if (!previousValues) {
+      return;
+    }
+    reset(previousValues, { keepDefaultValues: true });
+  }, [previousValues, reset]);
 
   return (
     <div className="p-3 border-gray-600 border-4 border-solid">
@@ -80,6 +87,15 @@ function Form({
         >
           copy this form
         </button>
+        <button
+          className="bg-orange-500 text-white px-4 py-2"
+          type="button"
+          onClick={() => {
+            reset();
+          }}
+        >
+          reset this form
+        </button>
       </div>
     </div>
   );
@@ -107,7 +123,7 @@ export function App() {
           onClickCopy={(v) => {
             setForms((prev) => [...prev, v]);
           }}
-          defaultValues={form}
+          previousValues={form}
         />
       ))}
     </div>
